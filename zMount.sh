@@ -46,7 +46,7 @@ function do_mount () {
     zenity --password \
       --width=600 \
       --title="Enter Sudo Password to mount $2" \
-      --ok-label "Mount" | sudo -kS mount "$2"
+      --ok-label "Mount" | sudo -kS mount "$mount_path$3"
   fi
   
   if [ $? -eq 1 ]; then
@@ -176,7 +176,7 @@ option=$(zenity --info --text="What would you like to do with /dev/${column[0]}?
   #1 means a button thats isn't "ok" was pressed
   if [ "$?" = 1 ] ; then
     if [ "$option" = "$mount_type" ]; then
-      do_mount "$mount_type" "/dev/${column[0]}" #TODO un-hardcode /dev/ maybe check 0 has a value
+      do_mount "$mount_type" "/dev/${column[0]}" ${column[3]} #TODO un-hardcode /dev/ maybe check 0 has a value
     else
       if [ "$option" = "Auto Mount" ]; then
         auto_mount "${column[3]}" "${column[2]}"
