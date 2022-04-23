@@ -10,8 +10,8 @@ external_drive_info="$tmp_dir/external_drive_info.txt"
 external_part_list="$tmp_dir/external_partition_list.txt"
 
 #debuging
-mount_path="/run/media/scawp/"
-#mount_path="/run/media/deck/"
+#mount_path="/run/media/scawp/"
+mount_path="/run/media/deck/"
 
 
 #create temp dir if missing
