@@ -43,6 +43,7 @@ function do_mount () {
       --title="Enter Sudo Password to Unmount $2" \
       --ok-label "Unmount" | sudo -kS umount "$2"
   else
+    #TODO check if mount point exist, if not create. if -z $path$3 ???
     zenity --password \
       --width=600 \
       --title="Enter Sudo Password to mount $2" \
