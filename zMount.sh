@@ -9,8 +9,6 @@ external_drive_list="$tmp_dir/external_drive_list.txt"
 external_drive_info="$tmp_dir/external_drive_info.txt"
 external_part_list="$tmp_dir/external_partition_list.txt"
 
-#debuging
-#mount_path="/run/media/scawp/"
 mount_path="/run/media/deck/"
 
 zenity_timeout=3 #seconds
@@ -22,7 +20,7 @@ if [ ! -d "$tmp_dir" ]; then
   mkdir "$tmp_dir"
 fi
 
-#TODO A better wayto do this?
+#TODO this is to fore kdesu dialog to use sudo, maybe theres a better way?
 if [ ! -f ~/.config/kdesurc ];then
   touch ~/.config/kdesurc
   echo "[super-user-command]" > ~/.config/kdesurc
@@ -57,7 +55,7 @@ function do_mount () {
     fi
   fi
   
-#TODO check this is reachable
+  #TODO check this is reachable
   if [ "$?" -eq 1 ]; then
     zenity --error \
       --text="$1ing failed, Aborting!" --timeout="$zenity_timeout"
@@ -76,6 +74,8 @@ function auto_mount () {
     exit 1;
   else
     kdesu -c "echo -e \"\nUUID=$1 $mount_path$1 $2  defaults,nofail  0 0\" | tee -a \"/etc/fstab\""
+    
+    #TODO this might no longer be reachable
     if [ "$?" = 1 ]; then
       zenity --error \
         --text="Writing to Fstab failed, Aborting!" --timeout="$zenity_timeout"
