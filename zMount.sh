@@ -51,12 +51,13 @@ function do_mount () {
   else
     if [ ! -d "$mount_path$3" ]; then
       echo "creating mount point"
-      kdesu -c "mkdir -p "$mount_path$3""
+      kdesu -c "mkdir -p \"$mount_path$3\"; mount \"$2\" \"$mount_path$3\""
+    else
+      kdesu -c "mount \"$2\" \"$mount_path$3\""
     fi
-    kdesu mount "$2" "$mount_path$3"
-    echo "mount $2 $mount_path$3"
   fi
   
+#TODO check this is reachable
   if [ "$?" -eq 1 ]; then
     zenity --error \
       --text="$1ing failed, Aborting!" --timeout="$zenity_timeout"
@@ -142,7 +143,7 @@ if [ ! -n "$selected_drive" ] ; then
 fi
 
 #get full info on the selected drives partitions
-lsblk -io NAME,SIZE,FSTYPE,UUID,MOUNTPOINTS \
+lsblk -io NAME,SIZE,FSTYPE,UUID \
   | grep -i '[\`|\|]\-'$selected_drive | sed 's/[\|\`][\-]//' > "$external_part_list"
 
 num_of_partitions="$(wc -l < "$external_part_list")" 
@@ -151,7 +152,7 @@ if [ $num_of_partitions -gt 0 ]; then
   selected_drive=$(zenity --list --title="Please Select a Partiton" \
     --width=800 --height=200 --print-column=1 \
     --separator='\t' --ok-label "Select" \
-    --column="Name" --column="Size" --column="Type" --column="UUID" --column="Mount" \
+    --column="Name" --column="Size" --column="Type" --column="UUID" \
     $(cat "$external_part_list"))
   
   if [ "$?" = 1 ] ; then
