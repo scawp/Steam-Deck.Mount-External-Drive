@@ -82,6 +82,12 @@ function auto_mount () {
       echo "Fail"
       exit 1;
     fi
+
+    if grep -i '^UUID='$1 /etc/fstab; then
+    zenity --info \
+      --width=600 \
+      --text="Mount Point $mount_path$1 will Auto Mount on Restart!" --timeout="$zenity_timeout"
+    fi
   fi
 }
 
@@ -160,6 +166,16 @@ if [ $num_of_partitions -gt 0 ]; then
     exit 1;
   fi
 fi
+
+if [ ! -n "$selected_drive" ] ; then
+  echo "No Drive Selected"
+  zenity --error \
+    --text="No Drive Selected, Aborting!" --timeout="$zenity_timeout"
+  
+  echo "Failure"
+  exit 1;
+fi
+
 
 #get full info on the drive/partiton
 lsblk -nlo NAME,SIZE,FSTYPE,UUID,MOUNTPOINTS \
