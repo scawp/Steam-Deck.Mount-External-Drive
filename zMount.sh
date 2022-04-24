@@ -143,13 +143,13 @@ fi
 
 #get full info on the selected drives partitions
 lsblk -io NAME,SIZE,FSTYPE,UUID,MOUNTPOINTS \
-  | grep -i '[\`|\|]\-'$selected_drive > "$external_part_list"
+  | grep -i '[\`|\|]\-'$selected_drive | sed 's/[\|\`][\-]//' > "$external_part_list"
 
 num_of_partitions="$(wc -l < "$external_part_list")" 
 
 if [ $num_of_partitions -gt 0 ]; then
   selected_drive=$(zenity --list --title="Please Select a Partiton" \
-    --width=800 --height=200 --print-column=2 \
+    --width=800 --height=200 --print-column=1 \
     --separator='\t' --ok-label "Select" \
     --column="Name" --column="Size" --column="Type" --column="UUID" --column="Mount" \
     $(cat "$external_part_list"))
@@ -160,11 +160,8 @@ if [ $num_of_partitions -gt 0 ]; then
   fi
 fi
 
-#echo "$selected_drive"
-
-#TODO trim selected_drive when its a partition for |`- etc
 #get full info on the drive/partiton
-lsblk -ndo NAME,SIZE,FSTYPE,UUID,MOUNTPOINTS \
+lsblk -nlo NAME,SIZE,FSTYPE,UUID,MOUNTPOINTS \
 | grep -i '^'$selected_drive > "$external_drive_info"
 
 read -r line < "$external_drive_info"
