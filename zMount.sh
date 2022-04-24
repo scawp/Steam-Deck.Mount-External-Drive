@@ -13,6 +13,8 @@ external_part_list="$tmp_dir/external_partition_list.txt"
 #mount_path="/run/media/scawp/"
 mount_path="/run/media/deck/"
 
+zenity_timeout=2 #seconds
+
 
 #create temp dir if missing
 if [ ! -d "$tmp_dir" ]; then
@@ -37,26 +39,16 @@ function do_mount () {
     exit 1;
   fi
   
-  if [ "$1" = "Unmount" ] ; then
-    #zenity --password \
-    #  --width=600 \
-    #  --title="Enter Sudo Password to Unmount $2" \
-    #  --ok-label "Unmount" | sudo -kS umount "$2"
-      
+  if [ "$1" = "Unmount" ] ; then 
     pkexec umount "$2"
   else
     #TODO check if mount point exist, if not create. if -z $path$3 ???
-    
-    #zenity --password \
-    #  --width=600 \
-    #  --title="Enter Sudo Password to mount $2" \
-    #  --ok-label "Mount" | sudo -kS mount "$mount_path$3"
-    kdesu mount "$mount_path$3"
+    pkexec mount "$mount_path$3"
   fi
   
-  if [ $? -eq 1 ]; then
+  if [ "$?" -eq 1 ]; then
     zenity --error \
-      --text="$1ing failed, Aborting!"
+      --text="$1ing failed, Aborting!" --timeout="$zenity_timeout"
     echo "Aborted"
     exit 1;
   fi
@@ -68,15 +60,14 @@ function auto_mount () {
     #TODO Add option to delete auto mount
     zenity --error \
       --width=600 \
-      --text="Mount Point $mount_path$1 Exists, Aborting!"
+      --text="Mount Point $mount_path$1 Exists, Aborting!" --timeout="$zenity_timeout"
     exit 1;
   else
-
-    { echo "$(zenity --password \
-    --title="Enter Sudo Password to confirm" \
-    --width=600 \
-    --ok-label "Add Auto Mount" )"; echo -e "\nUUID=$1 $mount_path$1 $2  defaults,nofail  0 0"; } | sudo -kS tee -a "/etc/fstab"
+    pkexec echo -e "\nUUID=$1 $mount_path$1 $2  defaults,nofail  0 0"; >> "/etc/fstab"
+    echo "$?"
     if [ "$?" = 1 ]; then
+      zenity --error \
+        --text="Writing to Fstab failed, Aborting!" --timeout="$zenity_timeout"
       echo "Fail"
       exit 1;
     fi
