@@ -170,9 +170,7 @@ fi
 if [ ! -n "$selected_drive" ] ; then
   echo "No Drive Selected"
   zenity --error \
-    --text="No Drive Selected, Aborting!" --timeout="$zenity_timeout"
-  
-  echo "Failure"
+    --text="No Drive Selected, Aborting!" --timeout="$zenity_timeout"  
   exit 1;
 fi
 
@@ -184,6 +182,13 @@ lsblk -nlo NAME,SIZE,FSTYPE,UUID,MOUNTPOINTS \
 read -r line < "$external_drive_info"
 echo "$line"
 column=($line) #0=NAME 1=SIZE 2=FSTYPE 3=UUID 4=MOUNTPOINTS
+
+if [ ! -n "${column[3]}" ]; then
+  echo "Error No UUID"
+  zenity --error \
+    --text="No UUID, Aborting!" --timeout="$zenity_timeout"
+  exit 1;
+fi
 
 mount_type="Mount"
 if [ -n "${column[4]}" ]; then
