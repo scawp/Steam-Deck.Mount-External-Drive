@@ -13,13 +13,20 @@ external_part_list="$tmp_dir/external_partition_list.txt"
 #mount_path="/run/media/scawp/"
 mount_path="/run/media/deck/"
 
-zenity_timeout=2 #seconds
+zenity_timeout=3 #seconds
 
 
 #create temp dir if missing
 if [ ! -d "$tmp_dir" ]; then
   echo "creating tmp dir"
   mkdir "$tmp_dir"
+fi
+
+#TODO A better wayto do this?
+if [ ! -f ~/.config/kdesurc ];then
+  touch ~/.config/kdesurc
+  echo "[super-user-command]" > ~/.config/kdesurc
+  echo "super-user-command=sudo" >> ~/.config/kdesurc
 fi
 
 #purge temp files
@@ -40,10 +47,14 @@ function do_mount () {
   fi
   
   if [ "$1" = "Unmount" ] ; then 
-    pkexec umount "$2"
+    kdesu umount "$2"
   else
-    #TODO check if mount point exist, if not create. if -z $path$3 ???
-    pkexec mount "$mount_path$3"
+    if [ ! -d "$mount_path$3" ]; then
+      echo "creating mount point"
+      kdesu -c "mkdir -p "$mount_path$3""
+    fi
+    kdesu mount "$2" "$mount_path$3"
+    echo "mount $2 $mount_path$3"
   fi
   
   if [ "$?" -eq 1 ]; then
@@ -63,8 +74,7 @@ function auto_mount () {
       --text="Mount Point $mount_path$1 Exists, Aborting!" --timeout="$zenity_timeout"
     exit 1;
   else
-    pkexec echo -e "\nUUID=$1 $mount_path$1 $2  defaults,nofail  0 0"; >> "/etc/fstab"
-    echo "$?"
+    kdesu -c "echo -e \"\nUUID=$1 $mount_path$1 $2  defaults,nofail  0 0\" | tee -a \"/etc/fstab\""
     if [ "$?" = 1 ]; then
       zenity --error \
         --text="Writing to Fstab failed, Aborting!" --timeout="$zenity_timeout"
