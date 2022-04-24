@@ -38,16 +38,20 @@ function do_mount () {
   fi
   
   if [ "$1" = "Unmount" ] ; then
-    zenity --password \
-      --width=600 \
-      --title="Enter Sudo Password to Unmount $2" \
-      --ok-label "Unmount" | sudo -kS umount "$2"
+    #zenity --password \
+    #  --width=600 \
+    #  --title="Enter Sudo Password to Unmount $2" \
+    #  --ok-label "Unmount" | sudo -kS umount "$2"
+      
+    pkexec umount "$2"
   else
     #TODO check if mount point exist, if not create. if -z $path$3 ???
-    zenity --password \
-      --width=600 \
-      --title="Enter Sudo Password to mount $2" \
-      --ok-label "Mount" | sudo -kS mount "$mount_path$3"
+    
+    #zenity --password \
+    #  --width=600 \
+    #  --title="Enter Sudo Password to mount $2" \
+    #  --ok-label "Mount" | sudo -kS mount "$mount_path$3"
+    kdesu mount "$mount_path$3"
   fi
   
   if [ $? -eq 1 ]; then
