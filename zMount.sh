@@ -43,25 +43,37 @@ function do_mount () {
     echo "No Drive Selected"
     exit 1;
   fi
-  
-  if [ "$1" = "Unmount" ] ; then 
-    kdesu umount "$2"
+
+  if [ "$1" = "Unmount" ] ; then
+    kdesu -c "umount \"$2\""
   else
-    if [ ! -d "$mount_path$3" ]; then
-      echo "creating mount point"
-      kdesu -c "mkdir -p \"$mount_path$3\"; mount \"$2\" \"$mount_path$3\""
+    if grep -i '^UUID='$3 /etc/fstab; then
+      #if theres an entry in fstab use those values (by default)
+      kdesu -c "mount $2"
     else
-      kdesu -c "mount \"$2\" \"$mount_path$3\""
+      #TODO change from using UUID as mount point to label
+      if [ ! -d "$mount_path$3" ]; then
+        echo "creating mount point"
+        kdesu -c "mkdir -p $mount_path$3; mount $2 $mount_path$3"
+      else
+        kdesu -c "mount $2 /run/media/deck/ext4ernal"
+      fi
     fi
   fi
   
-  #TODO check this is reachable
   if [ "$?" -eq 1 ]; then
+    #TODO check this is reachable
     zenity --error \
       --text="$1ing failed, Aborting!" --timeout="$zenity_timeout"
     echo "Aborted"
     exit 1;
   fi
+
+  #TODO better feedback here, assumes no errors
+  zenity --info \
+    --text="$1ed!" --timeout="$zenity_timeout"
+  echo "Aborted"
+  exit 0;
 }
 
 function auto_mount () {
