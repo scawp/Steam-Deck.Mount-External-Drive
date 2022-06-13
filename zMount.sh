@@ -37,7 +37,6 @@ if [ "$1" = "sd" ]; then
   show_sd_card=1
 fi
 
-
 function do_mount () {
   if [ ! -n "$2" ] ; then
     echo "No Drive Selected"
@@ -49,14 +48,13 @@ function do_mount () {
   else
     if grep -i '^UUID='$3 /etc/fstab; then
       #if theres an entry in fstab use those values (by default)
-      kdesu -c "mount $2"
+      kdesu -c "mount $mount_path$4"
     else
-      #TODO change from using UUID as mount point to label
       if [ ! -d "$mount_path$3" ]; then
         echo "creating mount point"
-        kdesu -c "mkdir -p $mount_path$3; mount $2 $mount_path$3"
+        kdesu -c "mkdir -p $mount_path$4; mount $2 $mount_path$4"
       else
-        kdesu -c "mount $2 /run/media/deck/ext4ernal"
+        kdesu -c "mount $2 $mount_path$4"
       fi
     fi
   fi
@@ -72,7 +70,7 @@ function do_mount () {
   #TODO better feedback here, assumes no errors
   zenity --info \
     --text="$1ed!" --timeout="$zenity_timeout"
-  echo "Aborted"
+  echo "Exit"
   exit 0;
 }
 
@@ -100,6 +98,7 @@ function auto_mount () {
       --width=600 \
       --text="Mount Point $mount_path$1 will Auto Mount on Restart!" --timeout="$zenity_timeout"
     fi
+    #TODO else!
   fi
 }
 
@@ -115,6 +114,8 @@ function auto_mount () {
       #HOTPLUG does show mmc drives
       lsblk -ndo HOTPLUG,NAME,SIZE | grep -i '^\s*1' > "$external_drive_list"
     fi
+
+    #TODO can get stuck in loop if dialog is closed
   done
   echo "# External Drive Found!"; sleep 2 #need the sleep for the re-check below
   echo "100";
@@ -123,7 +124,8 @@ function auto_mount () {
       --width=300 \
       --percentage=0 --pulsate --auto-close
 
-if [ "$?" = -1 ] ; then
+echo "$?"
+if [ "$?" = 1 ] ; then
   echo "Aborted"
   exit 1;
 fi
@@ -143,7 +145,7 @@ num_of_drives="$(wc -l < "$external_drive_list")"
     --separator='\t' --ok-label "Select Drive" \
     --radiolist --column="Select" --column="Name" --column="Size" \
     $(cat "$external_drive_list"))
-  if [ "$?" = -1 ] ; then
+  if [ "$?" = 1 ] ; then
     echo "Aborted"
     exit 1;
   fi
@@ -166,7 +168,7 @@ lsblk -io NAME,SIZE,FSTYPE,UUID \
 
 num_of_partitions="$(wc -l < "$external_part_list")" 
 
-if [ $num_of_partitions -gt 0 ]; then
+if [ $num_of_partitions -gt 1 ]; then
   selected_drive=$(zenity --list --title="Please Select a Partiton" \
     --width=800 --height=200 --print-column=1 \
     --separator='\t' --ok-label "Select" \
@@ -179,6 +181,13 @@ if [ $num_of_partitions -gt 0 ]; then
   fi
 fi
 
+if [ $num_of_partitions -eq 1 ]; then
+  read -r line < "$external_part_list"
+  echo "$line"
+  column=($line) #0=NAME 1=SIZE 2=FSTYPE 4=UUID 3=MOUNTPOINT
+  selected_drive=${column[0]}
+fi
+
 if [ ! -n "$selected_drive" ] ; then
   echo "No Drive Selected"
   zenity --error \
@@ -188,12 +197,12 @@ fi
 
 
 #get full info on the drive/partiton
-lsblk -nlo NAME,SIZE,FSTYPE,UUID,MOUNTPOINTS \
+lsblk -nlo NAME,SIZE,FSTYPE,UUID,LABEL,MOUNTPOINT \
 | grep -i '^'$selected_drive > "$external_drive_info"
 
 read -r line < "$external_drive_info"
 echo "$line"
-column=($line) #0=NAME 1=SIZE 2=FSTYPE 3=UUID 4=MOUNTPOINTS
+column=($line) #0=NAME 1=SIZE 2=FSTYPE 4=UUID 3=MOUNTPOINT
 
 if [ ! -n "${column[3]}" ]; then
   echo "Error No UUID"
@@ -203,17 +212,19 @@ if [ ! -n "${column[3]}" ]; then
 fi
 
 mount_type="Mount"
-if [ -n "${column[4]}" ]; then
+#TODO assumes the presence of a mount point that the drive is mounted. check.
+if [ -n "${column[5]}" ]; then
   mount_type="Unmount"
 fi
 
-option=$(zenity --info --text="What would you like to do with /dev/${column[0]}?" --width=400 \
+option=$(zenity --info --text="What would you like to do with /dev/${column[0]} \(${column[4]}\)?" --width=400 \
     --extra-button "$mount_type" --extra-button "Auto Mount" \
     --ok-label "Quit")
   #1 means a button thats isn't "ok" was pressed
   if [ "$?" = 1 ] ; then
     if [ "$option" = "$mount_type" ]; then
-      do_mount "$mount_type" "/dev/${column[0]}" ${column[3]} #TODO un-hardcode /dev/ maybe check 0 has a value
+      do_mount "$mount_type" "/dev/${column[0]}" "${column[3]}" "${column[4]}" 
+      #TODO un-hardcode (3) /dev/ maybe check 0 has a value
     else
       if [ "$option" = "Auto Mount" ]; then
         auto_mount "${column[3]}" "${column[2]}"
@@ -221,4 +232,5 @@ option=$(zenity --info --text="What would you like to do with /dev/${column[0]}?
     fi
   fi
 
+echo "script finshed"
 exit 0;
