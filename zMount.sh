@@ -44,9 +44,9 @@ function get_drive_list () {
 
 function mount_drive () {
   if [ "$1" = "mount" ]; then
-    udisksctl mount --no-user-interaction -b "$1" 2> $tmp_dir/last_error.log 1> $tmp_dir/last_msg.log
+    udisksctl mount --no-user-interaction -b "/dev/disk/by-uuid/$2" 2> $tmp_dir/last_error.log 1> $tmp_dir/last_msg.log
   else
-    udisksctl unmount --no-user-interaction -b "$1" 2> $tmp_dir/last_error.log 1> $tmp_dir/last_msg.log
+    udisksctl unmount --no-user-interaction -b "/dev/disk/by-uuid/$2" 2> $tmp_dir/last_error.log 1> $tmp_dir/last_msg.log
   fi
 
   if [ "$?" != 0 ]; then
@@ -84,10 +84,10 @@ function main () {
 
   if [ "$mount_point" = "Unmounted" ]; then
     confirm_gui "mount" "$path" "$uuid"
-    mount_drive "mount" "$path"
+    mount_drive "mount" "$uuid"
   else
     confirm_gui "unmount" "$path" "$uuid"
-    mount_drive "unmount" "$path"
+    mount_drive "unmount" "$uuid"
   fi
 
   zenity --info --width=400 \
