@@ -6,6 +6,12 @@
 
 script_dir="$(dirname $(realpath "$0"))"
 tmp_dir="$script_dir/temp"
+log_dir="$script_dir/logs"
+config_dir="$script_dir/config"
+
+mkdir -p "$tmp_dir"
+mkdir -p "$log_dir"
+mkdir -p "$config_dir"
 
 external_drive_list="$tmp_dir/external_drive_list.txt"
 
@@ -20,7 +26,7 @@ function log_msg () {
 function list_gui () {
   #IFS=$'\t';
   selected_device=$(zenity --list --title="Select Drive to (un)Mount" \
-    --width=1000 --height=720 --print-column=ALL   --separator="\t" \
+    --width=1000 --height=360 --print-column=ALL   --separator="\t" \
     --ok-label "(Un)Mount" --extra-button "Refresh" \
     --column="Path" --column="Size" --column="UUID" \
     --column="Mount Point" \
@@ -52,9 +58,12 @@ function mount_drive () {
   if [ "$?" != 0 ]; then
     log_error "$(sed -n '1p' $tmp_dir/last_error.log)"
     ret_value="$(sed -n '1p' $tmp_dir/last_error.log)"
+    ret_success=0
   else
     log_msg "$(sed -n '1p' $tmp_dir/last_msg.log)"
     ret_value="$(sed -n '1p' $tmp_dir/last_msg.log)"
+    ret_success=1
+
   fi
 }
 
@@ -82,14 +91,32 @@ function main () {
     exit 1;
   fi
 
+  #TODO: Check /etc/fstab/, cant mount fstab this way
   if [ "$mount_point" = "Unmounted" ]; then
     confirm_gui "mount" "$path" "$uuid"
     mount_drive "mount" "$uuid"
+     if [ "$ret_success" = "1" ]; then
+      if [ -f "$config_dir/drive_list.conf" ]; then
+        if [ ! "$(grep ^"$uuid"$ "$config_dir/drive_list.conf")" ]; then
+          #TODO: Function
+          zenity --question --width=400 \
+            --text="Do you want to mount "$(lsblk -noMOUNTPOINT $path)" on Boot?"
+          if [ "$?" = 0 ]; then
+            echo "$uuid" >> "$config_dir/drive_list.conf"
+            zenity --info --width=400 \
+              --text="$path will be mounted on Boot"
+            
+            exit 0;
+          fi
+        fi
+      fi
+    fi
   else
     confirm_gui "unmount" "$path" "$uuid"
     mount_drive "unmount" "$uuid"
   fi
 
+  #TODO: Function!
   zenity --info --width=400 \
     --text="$ret_value"
 
