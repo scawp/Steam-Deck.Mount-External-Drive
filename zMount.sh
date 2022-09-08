@@ -4,9 +4,18 @@
 #Source: https://github.com/scawp/Steam-Deck.Mount-External-Drive
 # Use at own Risk!
 
-tmp_dir="$(dirname "$(realpath "$0")")/tmp"
+script_dir="$(dirname $(realpath "$0"))"
+tmp_dir="$script_dir/temp"
 
 external_drive_list="$tmp_dir/external_drive_list.txt"
+
+function log_error () {
+  echo "$1" | sed "s&^&[$(date "+%F %T")] ("$0") &" | tee -a "$log_dir/error.log"
+}
+
+function log_msg () {
+  echo "$1" | sed "s&^&[$(date "+%F %T")] ("$0") &" | tee -a "$log_dir/info.log"
+}
 
 function list_gui () {
   #IFS=$'\t';
@@ -33,13 +42,22 @@ function get_drive_list () {
   lsblk -nlo HOTPLUG,PATH,SIZE,UUID,MOUNTPOINT | grep -i '^\s*1' | awk  '$4!=""' | awk '{ if ( $5!="") print $2"\t"$3"\t"$4"\t"$5;else print $2"\t"$3"\t"$4"\tUnmounted"}' > "$external_drive_list"
 }
 
-function do_mount () {
+function mount_drive () {
   if [ "$1" = "mount" ]; then
-    ret_value="$(udisksctl mount -b "$2")"
+    udisksctl mount --no-user-interaction -b "$1" 2> $tmp_dir/last_error.log 1> $tmp_dir/last_msg.log
   else
-    ret_value="$(udisksctl unmount -b "$2")"
+    udisksctl unmount --no-user-interaction -b "$1" 2> $tmp_dir/last_error.log 1> $tmp_dir/last_msg.log
+  fi
+
+  if [ "$?" != 0 ]; then
+    log_error "$(sed -n '1p' $tmp_dir/last_error.log)"
+    ret_value="$(sed -n '1p' $tmp_dir/last_error.log)"
+  else
+    log_msg "$(sed -n '1p' $tmp_dir/last_msg.log)"
+    ret_value="$(sed -n '1p' $tmp_dir/last_msg.log)"
   fi
 }
+
 
 function main () {
   get_drive_list
@@ -66,10 +84,10 @@ function main () {
 
   if [ "$mount_point" = "Unmounted" ]; then
     confirm_gui "mount" "$path" "$uuid"
-    do_mount "mount" "$path"
+    mount_drive "mount" "$path"
   else
     confirm_gui "unmount" "$path" "$uuid"
-    do_mount "unmount" "$path"
+    mount_drive "unmount" "$path"
   fi
 
   zenity --info --width=400 \

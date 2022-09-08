@@ -1,0 +1,12 @@
+[Desktop Entry]
+Comment=https://github.com/scawp/Steam-Deck.Mount-External-Drive
+Exec=
+GenericName=
+Icon=dialog-scripts
+MimeType=
+Name=Scawps Mount on Start Up Script
+StartupNotify=true
+Terminal=false
+Type=Application
+X-KDE-AutostartScript=true
+X-KDE-SubstituteUID=false
