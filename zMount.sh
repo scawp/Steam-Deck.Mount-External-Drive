@@ -15,6 +15,13 @@ mkdir -p "$config_dir"
 
 external_drive_list="$tmp_dir/external_drive_list.txt"
 
+#TODO this is to fore kdesu dialog to use sudo, maybe theres a better way?
+if [ ! -f ~/.config/kdesurc ];then
+  touch ~/.config/kdesurc
+  echo "[super-user-command]" > ~/.config/kdesurc
+  echo "super-user-command=sudo" >> ~/.config/kdesurc
+fi
+
 function log_error () {
   echo "$1" | sed "s&^&[$(date "+%F %T")] ("$0") &" | tee -a "$log_dir/error.log"
 }
@@ -24,13 +31,14 @@ function log_msg () {
 }
 
 function list_gui () {
-  #IFS=$'\t';
+  #IFS=$';';
+  # --extra-button "Auto Mount"
   selected_device=$(zenity --list --title="Select Drive to (un)Mount" \
     --width=1000 --height=360 --print-column=ALL   --separator="\t" \
     --ok-label "(Un)Mount" --extra-button "Refresh" \
     --column="Path" --column="Size" --column="UUID" \
     --column="Mount Point" \
-    $(cat "$1" | sed -e 's/$/\t/'))
+    $(cat "$external_drive_list" | sed -e 's/$/\t/'))
   ret_value="$?"
   #unset IFS;
 }
@@ -48,11 +56,11 @@ function get_drive_list () {
   lsblk -nlo HOTPLUG,PATH,SIZE,UUID,MOUNTPOINT | grep -i '^\s*1' | awk  '$4!=""' | awk '{ if ( $5!="") print $2"\t"$3"\t"$4"\t"$5;else print $2"\t"$3"\t"$4"\tUnmounted"}' > "$external_drive_list"
 }
 
-function mount_drive () {
+function sudo_mount_drive () {
   if [ "$1" = "mount" ]; then
-    udisksctl mount --no-user-interaction -b "/dev/disk/by-uuid/$2" 2> $tmp_dir/last_error.log 1> $tmp_dir/last_msg.log
+    kdesu -c "udisksctl mount -b \"/dev/disk/by-uuid/$2\" 2> $tmp_dir/last_error.log 1> $tmp_dir/last_msg.log"
   else
-    udisksctl unmount --no-user-interaction -b "/dev/disk/by-uuid/$2" 2> $tmp_dir/last_error.log 1> $tmp_dir/last_msg.log
+    kdesu -c "udisksctl unmount -b \"/dev/disk/by-uuid/$2\" 2> $tmp_dir/last_error.log 1> $tmp_dir/last_msg.log"
   fi
 
   if [ "$?" != 0 ]; then
@@ -63,14 +71,30 @@ function mount_drive () {
     log_msg "$(sed -n '1p' $tmp_dir/last_msg.log)"
     ret_value="$(sed -n '1p' $tmp_dir/last_msg.log)"
     ret_success=1
-
   fi
 }
 
+function mount_drive () {
+  if [ "$1" = "mount" ]; then
+    udisksctl mount --no-user-interaction -b "/dev/disk/by-uuid/$2" 2> $tmp_dir/last_error.log 1> $tmp_dir/last_msg.log
+  else
+    udisksctl unmount --no-user-interaction -b "/dev/disk/by-uuid/$2" 2> $tmp_dir/last_error.log 1> $tmp_dir/last_msg.log
+  fi
+
+  if [ "$?" != 0 ]; then
+    log_error "$(sed -n '1p' $tmp_dir/last_error.log)"
+    ret_value="$(sed -n '1p' $tmp_dir/last_error.log)"
+    sudo_mount_drive $1 $2
+  else
+    log_msg "$(sed -n '1p' $tmp_dir/last_msg.log)"
+    ret_value="$(sed -n '1p' $tmp_dir/last_msg.log)"
+    ret_success=1
+  fi
+}
 
 function main () {
   get_drive_list
-  list_gui "$external_drive_list"
+  list_gui
   echo "$ret_value"
   mount_point="$(echo "$selected_device" | awk '{ print $4 }')" 
   path="$(echo "$selected_device" | awk '{ print $1 }')"
@@ -81,7 +105,11 @@ function main () {
     if [ "$selected_device" = "Refresh" ]; then
       main
     else
-      exit 1;
+      if [ "$selected_device" = "Auto Mount" ]; then
+        continue
+      else
+        exit 1;
+      fi
     fi
   fi
 
@@ -91,7 +119,6 @@ function main () {
     exit 1;
   fi
 
-  #TODO: Check /etc/fstab/, cant mount fstab this way
   if [ "$mount_point" = "Unmounted" ]; then
     confirm_gui "mount" "$path" "$uuid"
     mount_drive "mount" "$uuid"
@@ -116,7 +143,6 @@ function main () {
     mount_drive "unmount" "$uuid"
   fi
 
-  #TODO: Function!
   zenity --info --width=400 \
     --text="$ret_value"
 
