@@ -1,0 +1,4 @@
+# /etc/udev/rules.d/
+# sudo udevadm control --reload
+KERNEL=="sd[a-z][0-9]", ACTION=="add", RUN+="/bin/systemctl start external-drive-mount@%k.service"
+KERNEL=="sd[a-z][0-9]", ACTION=="remove", RUN+="/bin/systemctl stop external-drive-mount@%k.service"
