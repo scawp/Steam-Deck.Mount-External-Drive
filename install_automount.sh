@@ -6,7 +6,7 @@
 
 script_dir="$(dirname $(realpath "$0"))"
 lib_dir="$script_dir/lib"
-conf_dir="$script_dir/conf"
+conf_dir="$script_dir/config"
 rules_install_dir="/etc/udev/rules.d"
 service_install_dir="/etc/systemd/system"
 
@@ -18,13 +18,18 @@ if [ "$confirm" != "y" ]; then
   exit 0;
 fi
 
+mkdir "$conf_dir"
+touch "$conf_dir/drive_list.conf"
+
 echo -en "Would you like to Auto-Mount Any and All External Drives? \
 \n\"y\": Any Drive will be Auto-Mounted on insert. \
 \n\"n\": Drives that are Whitelisted using \"zMount.sh\" will be Auto-Mounted on insert. \
 \n(y/n) :"
 read confirm
-if [ "$confirm" != "y" ]; then
-  echo "ALWAYS" > $conf_dir/drive_list.conf
+if [ "$confirm" = "y" ]; then
+  echo "ALWAYS" > "$conf_dir/drive_list.conf"
+else
+  true > "$conf_dir/drive_list.conf"
 fi
 
 echo "Copying $lib_dir/99-external-drive-mount.rules to $rules_install_dir/99-external-drive-mount.rules"
