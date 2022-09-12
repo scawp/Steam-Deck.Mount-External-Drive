@@ -10,7 +10,7 @@ config_dir="$script_dir/config"
 mkdir -p "$config_dir"
 
 function mount_drive () {
-  mkdir "/run/media/deck/$(lsblk -noLABEL $1)"
+  mkdir -p "/run/media/deck/$(lsblk -noLABEL $1)"
   chown deck:deck "/run/media/deck/$(lsblk -noLABEL $1)"
   mount "$1" "/run/media/deck/$(lsblk -noLABEL $1)" -ouid=1000,gid=1000
 }
