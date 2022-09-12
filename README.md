@@ -4,6 +4,7 @@ Scripts to (Un)Mount and to Auto-Mount (All or Whitelisted) External USB SSD on 
 # Video Guide
 
 ~~https://youtu.be/q9tiNzVWjVo~~ Old Video
+https://youtu.be/n9UC0-KywDQ
 
 # Bacis Usage
 
