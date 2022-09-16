@@ -15,7 +15,7 @@ mkdir -p "$config_dir"
 
 external_drive_list="$tmp_dir/external_drive_list.txt"
 
-#TODO this is to fore kdesu dialog to use sudo, maybe theres a better way?
+#TODO this is to force kdesu dialog to use sudo, maybe theres a better way?
 if [ ! -f ~/.config/kdesurc ];then
   touch ~/.config/kdesurc
   echo "[super-user-command]" > ~/.config/kdesurc
@@ -31,16 +31,15 @@ function log_msg () {
 }
 
 function list_gui () {
-  #IFS=$';';
-  # --extra-button "Auto Mount"
+  IFS=$'[\t|\n]';
   selected_device=$(zenity --list --title="Select Drive to (un)Mount" \
-    --width=1000 --height=360 --print-column=ALL   --separator="\t" \
+    --width=1000 --height=360 --print-column=1 --separator="\t" \
     --ok-label "(Un)Mount" --extra-button "Refresh" \
     --column="Path" --column="Size" --column="UUID" \
-    --column="Mount Point" \
-    $(cat "$external_drive_list" | sed -e 's/$/\t/'))
+    --column="Mount Point" --column="Label" --column="File System" \
+    $(cat "$external_drive_list"))
   ret_value="$?"
-  #unset IFS;
+  unset IFS;
 }
 
 function confirm_gui () {
@@ -53,7 +52,8 @@ function confirm_gui () {
 }
 
 function get_drive_list () {
-  lsblk -nlo HOTPLUG,PATH,SIZE,UUID,MOUNTPOINT | grep -i '^\s*1' | awk  '$4!=""' | awk '{ if ( $5!="") print $2"\t"$3"\t"$4"\t"$5;else print $2"\t"$3"\t"$4"\tUnmounted"}' > "$external_drive_list"
+  #Overkill? Perhaps, but Zenity (or I) was struggling with Splitting
+  lsblk -PoHOTPLUG,PATH,SIZE,UUID,MOUNTPOINT,LABEL,FSTYPE | grep '^HOTPLUG="1"' | grep -v 'UUID=\"\"' | sed -e 's/^HOTPLUG=\"1\"\sPATH=\"//' -e 's/\"\"/\" \"/g' -e 's/\"\s[A-Z]*=\"/\t/g' -e 's/\"$//' | tee "$external_drive_list"
 }
 
 function sudo_mount_drive () {
@@ -95,12 +95,9 @@ function mount_drive () {
 function main () {
   get_drive_list
   list_gui
-  echo "$ret_value"
-  mount_point="$(echo "$selected_device" | awk '{ print $4 }')" 
-  path="$(echo "$selected_device" | awk '{ print $1 }')"
-  uuid="$(echo "$selected_device" | awk '{ print $3 }')" 
- 
-  echo "the path: $path"
+  mount_point="$(lsblk -noMOUNTPOINT $selected_device)"
+  uuid="$(lsblk -noUUID $selected_device)"
+
   if [ "$ret_value" = 1 ]; then
     if [ "$selected_device" = "Refresh" ]; then
       main
@@ -119,19 +116,19 @@ function main () {
     exit 1;
   fi
 
-  if [ "$mount_point" = "Unmounted" ]; then
-    confirm_gui "mount" "$path" "$uuid"
+  if [ "$mount_point" = "" ]; then
+    confirm_gui "mount" "$selected_device" "$uuid"
     mount_drive "mount" "$uuid"
      if [ "$ret_success" = "1" ]; then
       if [ -f "$config_dir/drive_list.conf" ]; then
         if [ ! "$(grep ^"$uuid"$ "$config_dir/drive_list.conf")" ]; then
           #TODO: Function
           zenity --question --width=400 \
-            --text="Do you want to mount "$(lsblk -noMOUNTPOINT $path)" on Boot?"
+            --text="Do you want to Auto-Mount "$(lsblk -noMOUNTPOINT $selected_device)"?"
           if [ "$?" = 0 ]; then
             echo "$uuid" >> "$config_dir/drive_list.conf"
             zenity --info --width=400 \
-              --text="$path will be mounted on Boot"
+              --text="Device with UUID:$uuid will be mounted Auto-Mounted"
             
             exit 0;
           fi
@@ -139,7 +136,7 @@ function main () {
       fi
     fi
   else
-    confirm_gui "unmount" "$path" "$uuid"
+    confirm_gui "unmount" "$selected_device" "$uuid"
     mount_drive "unmount" "$uuid"
   fi
 
