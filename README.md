@@ -13,5 +13,17 @@ https://youtu.be/n9UC0-KywDQ
 
 then run `./install_automount.sh`
 
+# Uninstall
+
+`sudo rm /etc/udev/rules.d/99-external-drive-mount.rules`
+
+`sudo rm /etc/systemd/system/external-drive-mount@.service`
+
+`sudo udevadm control --reload`
+
+`sudo systemctl daemon-reload`
+
+Then Delete this Repo from whereever you downloaded it to your Deck
+
 # WORK IN PROGRESS!
 This will probably have bugs, so beware! log bugs under `issues`!
