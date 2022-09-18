@@ -13,7 +13,7 @@ a `udev` rule is added to `/etc/udev/rules.d/99-external-drive-mount.rules`
 which calls systemd `/etc/systemd/system/external-drive-mount@[sda1|sda2|sdd1|etc].service`
 that then runs `automount.sh`
 
-`/etc/fstab` is not required for mounting in this way, (however if a Device has an `fstab` entry )
+`/etc/fstab` is not required for mounting in this way, (however if a Device has an `fstab` entry these scripts will still work)
 
 # Video Guide
 
