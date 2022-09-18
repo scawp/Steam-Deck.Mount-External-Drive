@@ -1,0 +1,9 @@
+# /etc/systemd/system
+[Unit]
+Description=Mount External Drive on %i
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStart=/home/deck/repo/Steam-Deck.Mount-External-Drive/automount.sh add %i
+ExecStop=/home/deck/repo/Steam-Deck.Mount-External-Drive/automount.sh remove %i
