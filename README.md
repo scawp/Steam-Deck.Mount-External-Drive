@@ -1,6 +1,10 @@
 # Steam-Deck.Mount-External-Drive
 Scripts to (Un)Mount and to Auto-Mount (All or Whitelisted) External USB SSD on the Steam Deck
 
+## Just want to Auto-Mount?
+
+See [https://github.com/scawp/Steam-Deck.Mount-External-Drive/tree/Quick-Auto-Mount-Only](https://github.com/scawp/Steam-Deck.Mount-External-Drive/tree/Quick-Auto-Mount-Only)
+
 # Video Guide
 
 ~~https://youtu.be/q9tiNzVWjVo~~ Old Video
