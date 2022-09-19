@@ -11,6 +11,9 @@ set -e
 
 repo_url="https://raw.githubusercontent.com/scawp/Steam-Deck.Mount-External-Drive/Quick-Auto-Mount-WIP"
 repo_lib_dir="$repo_url/lib"
+
+tmp_dir="/tmp/scawp"
+
 rules_install_dir="/etc/udev/rules.d"
 service_install_dir="/etc/systemd/system"
 script_install_dir="/home/deck/.local/share/scawp"
@@ -29,19 +32,7 @@ if [ "$device_name" != "steamdeck" ] || [ "$user" != "1000" ]; then
   fi
 fi
 
-mkdir -p "$script_install_dir"
-
-curl -o "$script_install_dir/auto_mount.sh" "$repo_url/auto_mount.sh"
-
-echo "okay bye!"
-echo $0
-echo $1
-
-
-
-exit 0;
-
-echo -en "Read https://github.com/scawp/Steam-Deck.Mount-External-Drive before proceeding. \
+echo -en "Read $repo_url/README.md before proceeding. \
 \nDo you want to install the Auto-Mount Service? (y/n) :"
 read confirm
 if [ "$confirm" != "y" ]; then
@@ -49,16 +40,27 @@ if [ "$confirm" != "y" ]; then
   exit 0;
 fi
 
-echo "Copying $lib_dir/99-external-drive-mount.rules to $rules_install_dir/99-external-drive-mount.rules"
-sudo cp "$lib_dir/99-external-drive-mount.rules" "$rules_install_dir/99-external-drive-mount.rules"
+echo "Making tmp folder $tmp_dir"
+mkdir -p "$tmp_dir"
 
-sed -e "s&\[AUTOMOUNTSCRIPT\]&$script_dir&g" "$lib_dir/template.service" > "$lib_dir/external-drive-mount@.service"
+echo "Making script folder $script_install_dir"
+mkdir -p "$script_install_dir"
 
-echo "Copying $lib_dir/external-drive-mount@.service to $service_install_dir/external-drive-mount@.service"
-sudo cp "$lib_dir/external-drive-mount@.service" "$service_install_dir/external-drive-mount@.service"
+echo "Downloading Required Files"
+curl -o "$tmp_dir/auto_mount.sh" "$repo_url/auto_mount.sh"
+curl -o "$tmp_dir/template.service" "$repo_lib_dir/template.service"
+curl -o "$tmp_dir/99-external-drive-mount.rules" "$repo_lib_dir/99-external-drive-mount.rules"
 
-echo "Adding Execute permissions"
-chmod +x $script_dir/automount.sh
+echo "Copying $tmp_dir/99-external-drive-mount.rules to $rules_install_dir/99-external-drive-mount.rules"
+sudo cp "$tmp_dir/99-external-drive-mount.rules" "$rules_install_dir/99-external-drive-mount.rules"
+
+sed -e "s&\[AUTOMOUNTSCRIPT\]&$script_install_dir&g" "$tmp_dir/template.service" > "$tmp_dir/external-drive-mount@.service"
+
+echo "Copying $tmp_dir/external-drive-mount@.service to $service_install_dir/external-drive-mount@.service"
+sudo cp "$tmp_dir/external-drive-mount@.service" "$service_install_dir/external-drive-mount@.service"
+
+echo "Adding Execute and Removing Write Permissions"
+chmod 555 $service_install_dir/automount.sh
 
 echo "Reloading Services"
 sudo udevadm control --reload
