@@ -41,7 +41,7 @@ The External Drive(s) will be Auto-Mounted to `/run/media/deck/[LABEL]` eg `/run
 
 ### NOTE!
 
-Drive requires prior formatting (currently tested with NTFS, Ext4, btrfs). All Partitions will be Mounted on Boot and /or On Insert.
+Drive requires prior formatting (currently tested with NTFS, Ext4, btrfs, NOTE: btrfs mounts with incorrect ownership, TODO). All Partitions will be Mounted on Boot and /or On Insert.
 
 Drive will still need added to Steam as a Steam Library Folder in Desktop mode initially but will appear on subsequent Boots/Inserts.
 
