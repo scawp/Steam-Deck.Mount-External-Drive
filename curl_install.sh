@@ -9,7 +9,7 @@
 #stop running script if anything returns an error (non-zero exit )
 set -e
 
-repo_url="https://raw.githubusercontent.com/scawp/Steam-Deck.Mount-External-Drive/Quick-Auto-Mount-WIP"
+repo_url="https://raw.githubusercontent.com/scawp/Steam-Deck.Mount-External-Drive/Quick-Auto-Mount"
 repo_lib_dir="$repo_url/lib"
 
 tmp_dir="/tmp/scawp"
