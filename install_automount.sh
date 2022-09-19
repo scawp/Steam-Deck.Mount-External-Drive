@@ -9,6 +9,20 @@ lib_dir="$script_dir/lib"
 rules_install_dir="/etc/udev/rules.d"
 service_install_dir="/etc/systemd/system"
 
+device_name="$(uname --nodename)"
+user="$(id -u deck)"
+
+if [ "$device_name" != "steamdeck" ] || [ "$user" != "1000" ]; then
+  echo -en "This code has been written specifically for the Steam Deck with user Deck \
+  \nIt appears you are running on a different system/non-standard configuration. \
+  \nAre you sure you want to continue? (y/n) :"
+  read confirm
+  if [ "$confirm" != "y" ]; then
+    echo "bye then! xxx"
+    exit 1;
+  fi
+fi
+
 echo -en "Read https://github.com/scawp/Steam-Deck.Mount-External-Drive before proceeding. \
 \nDo you want to install the Auto-Mount Service? (y/n) :"
 read confirm
