@@ -59,3 +59,6 @@ Then delete this Repo from whereever you downloaded it to your Deck
 
 # WORK IN PROGRESS!
 This will probably have bugs, so beware! log bugs under [issues](https://github.com/scawp/Steam-Deck.Mount-External-Drive/issues)!
+
+# "This is cool! How can I thank you?"
+Why not drop me a sub over on my youtube channel ;) [Chinballs Gaming](https://www.youtube.com/chinballsTV?sub_confirmation=1)
