@@ -4,6 +4,8 @@
 #Source: https://github.com/scawp/Steam-Deck.Mount-External-Drive
 # Use at own Risk!
 
+#curl -sSL https://raw.githubusercontent.com/scawp/Steam-Deck.Mount-External-Drive/Quick-Auto-Mount-WIP/curl_install.sh | bash
+
 #stop running script if anything returns an error (non-zero exit )
 set -e
 
@@ -27,6 +29,7 @@ if [ "$device_name" != "steamdeck" ] || [ "$user" != "1000" ]; then
   fi
 fi
 
+echo "okay bye!"
 echo $0
 echo $1
 
