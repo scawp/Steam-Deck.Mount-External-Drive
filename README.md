@@ -19,13 +19,23 @@ that then runs `automount.sh`
 
 https://youtu.be/n9UC0-KywDQ
 
-# Bacis Usage
+# Installation
 
-`chmod +x install_automount.sh`
+## Via Curl (One Line Install)
 
-then run `./install_automount.sh`, a `sudo` password is required (run `passwd` if required firs)
+In Konsole type `curl -sSL https://raw.githubusercontent.com/scawp/Steam-Deck.Mount-External-Drive/Quick-Auto-Mount-WIP/curl_install.sh | bash`
 
-# Install Options
+a `sudo` password is required (run `passwd` if required first)
+
+## Via Git
+
+Clone this Repo `git clone git@github.com:scawp/Steam-Deck.Mount-External-Drive.git`
+
+Run `chmod +x install_automount.sh`
+
+then run `./install_automount.sh`, a `sudo` password is required (run `passwd` if required first)
+
+# Operation
 
 The External Drive(s) will be Auto-Mounted to `/run/media/deck/[LABEL]` eg `/run/media/deck/External-ssd/` if the Device has no `label` then the Devices `UUID` will be used eg `/run/media/deck/a12332-12bf-a33ab-eef/`
 
