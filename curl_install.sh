@@ -9,8 +9,8 @@
 #stop running script if anything returns an error (non-zero exit )
 set -e
 
-script_dir="$(dirname $(realpath "$0"))"
-lib_dir="$script_dir/lib"
+repo_url="https://raw.githubusercontent.com/scawp/Steam-Deck.Mount-External-Drive/Quick-Auto-Mount-WIP"
+repo_lib_dir="$repo_url/lib"
 rules_install_dir="/etc/udev/rules.d"
 service_install_dir="/etc/systemd/system"
 script_install_dir="/home/deck/.local/share/scawp"
@@ -29,9 +29,15 @@ if [ "$device_name" != "steamdeck" ] || [ "$user" != "1000" ]; then
   fi
 fi
 
+mkdir -p "$script_install_dir"
+
+curl -o "$script_install_dir/auto_mount.sh" "$repo_url/auto_mount.sh"
+
 echo "okay bye!"
 echo $0
 echo $1
+
+
 
 exit 0;
 
