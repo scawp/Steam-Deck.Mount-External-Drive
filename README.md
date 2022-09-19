@@ -17,7 +17,7 @@ that then runs `automount.sh`
 
 # Video Guide
 
-https://youtu.be/n9UC0-KywDQ
+https://youtu.be/TiXmf_b7HF8
 
 # Installation
 
