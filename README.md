@@ -23,7 +23,7 @@ https://youtu.be/n9UC0-KywDQ
 
 ## Via Curl (One Line Install)
 
-In Konsole type `curl -sSL https://raw.githubusercontent.com/scawp/Steam-Deck.Mount-External-Drive/Quick-Auto-Mount/curl_install.sh | bash`
+In Konsole type `curl -sSL https://raw.githubusercontent.com/scawp/Steam-Deck.Mount-External-Drive/Quick-Auto-Mount-Only/curl_install.sh | bash`
 
 a `sudo` password is required (run `passwd` if required first)
 
