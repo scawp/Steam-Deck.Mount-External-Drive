@@ -8,7 +8,7 @@ script_dir="$(dirname $(realpath "$0"))"
 lib_dir="$script_dir/lib"
 rules_install_dir="/etc/udev/rules.d"
 service_install_dir="/etc/systemd/system"
-script_install_dir="/home/deck/.local/share/scawp"
+script_install_dir="/home/deck/.local/share/scawp/SDMED"
 
 device_name="$(uname --nodename)"
 user="$(id -u deck)"
