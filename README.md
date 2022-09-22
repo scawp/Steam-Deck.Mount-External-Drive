@@ -5,6 +5,12 @@ Scripts to (Un)Mount and to Auto-Mount (All or Whitelisted) External USB SSD on 
 
 See [https://github.com/scawp/Steam-Deck.Mount-External-Drive/tree/Quick-Auto-Mount-Only](https://github.com/scawp/Steam-Deck.Mount-External-Drive/tree/Quick-Auto-Mount-Only)
 
+NOTE! The Quick-Auto-Mount-Only Branch contains a very handy One Line Install:
+
+`curl -sSL https://raw.githubusercontent.com/scawp/Steam-Deck.Mount-External-Drive/Quick-Auto-Mount-Only/curl_install.sh | bash`
+
+Consider using this if you only care about Auto Mounting External Drives with zero fuss.
+
 # Video Guide
 
 ~~https://youtu.be/q9tiNzVWjVo~~ Old Video
