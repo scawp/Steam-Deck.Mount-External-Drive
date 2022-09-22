@@ -12,11 +12,11 @@ set -e
 repo_url="https://raw.githubusercontent.com/scawp/Steam-Deck.Mount-External-Drive/Quick-Auto-Mount-Only"
 repo_lib_dir="$repo_url/lib"
 
-tmp_dir="/tmp/scawp"
+tmp_dir="/tmp/scawp.SDMED.install"
 
 rules_install_dir="/etc/udev/rules.d"
 service_install_dir="/etc/systemd/system"
-script_install_dir="/home/deck/.local/share/scawp"
+script_install_dir="/home/deck/.local/share/scawp/SDMED"
 
 device_name="$(uname --nodename)"
 user="$(id -u deck)"
