@@ -8,5 +8,5 @@ Description=Mount External Drive on %i
 [Service]
 Type=oneshot
 RemainAfterExit=true
-ExecStart=/home/deck/.local/share/scawp/automount.sh add %i
-ExecStop=/home/deck/.local/share/scawp/automount.sh remove %i
+ExecStart=/home/deck/.local/share/scawp/SDMED/automount.sh add %i
+ExecStop=/home/deck/.local/share/scawp/SDMED/automount.sh remove %i
