@@ -5,7 +5,7 @@
 # Use at own Risk!
 
 script_dir="$(dirname $(realpath "$0"))"
-tmp_dir="/tmp/scawp.SDzMount"
+tmp_dir="/tmp/scawp.SDMED.zMount"
 
 mkdir -p "$tmp_dir"
 

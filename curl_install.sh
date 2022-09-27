@@ -33,40 +33,67 @@ if [ "$device_name" != "steamdeck" ] || [ "$user" != "1000" ]; then
   fi
 fi
 
-zenity --question --width=400 \
-  --text="Read $repo_url/README.md before proceeding. \
-\nDo you want to install the Auto-Mount Service?"
-if [ "$?" != 0 ]; then
-  #NOTE: This code will never be reached due to "set -e", the system will already exit for us but just incase keep this
-  echo "bye then! xxx"
-  exit 0;
-fi
+function install_automount () {
+  zenity --question --width=400 \
+    --text="Read $repo_url/README.md before proceeding. \
+  \nDo you want to install the Auto-Mount Service?"
+  if [ "$?" != 0 ]; then
+    #NOTE: This code will never be reached due to "set -e", the system will already exit for us but just incase keep this
+    echo "bye then! xxx"
+    exit 0;
+  fi
 
-echo "Making tmp folder $tmp_dir"
-mkdir -p "$tmp_dir"
+  echo "Making tmp folder $tmp_dir"
+  mkdir -p "$tmp_dir"
 
-echo "Downloading Required Files"
-curl -o "$tmp_dir/automount.sh" "$repo_url/automount.sh"
-curl -o "$tmp_dir/external-drive-mount@.service" "$repo_lib_dir/external-drive-mount@.service"
-curl -o "$tmp_dir/99-external-drive-mount.rules" "$repo_lib_dir/99-external-drive-mount.rules"
+  echo "Downloading Required Files"
+  curl -o "$tmp_dir/automount.sh" "$repo_url/automount.sh"
+  curl -o "$tmp_dir/external-drive-mount@.service" "$repo_lib_dir/external-drive-mount@.service"
+  curl -o "$tmp_dir/99-external-drive-mount.rules" "$repo_lib_dir/99-external-drive-mount.rules"
 
-echo "Making script folder $script_install_dir"
-mkdir -p "$script_install_dir"
+  echo "Making script folder $script_install_dir"
+  mkdir -p "$script_install_dir"
 
-echo "Copying $tmp_dir/automount.sh to $script_install_dir/automount.sh"
-sudo cp "$tmp_dir/automount.sh" "$script_install_dir/automount.sh"
+  echo "Copying $tmp_dir/automount.sh to $script_install_dir/automount.sh"
+  sudo cp "$tmp_dir/automount.sh" "$script_install_dir/automount.sh"
 
-echo "Adding Execute and Removing Write Permissions"
-sudo chmod 555 $script_install_dir/automount.sh
+  echo "Adding Execute and Removing Write Permissions"
+  sudo chmod 555 $script_install_dir/automount.sh
 
-echo "Copying $tmp_dir/99-external-drive-mount.rules to $rules_install_dir/99-external-drive-mount.rules"
-sudo cp "$tmp_dir/99-external-drive-mount.rules" "$rules_install_dir/99-external-drive-mount.rules"
+  echo "Copying $tmp_dir/99-external-drive-mount.rules to $rules_install_dir/99-external-drive-mount.rules"
+  sudo cp "$tmp_dir/99-external-drive-mount.rules" "$rules_install_dir/99-external-drive-mount.rules"
 
-echo "Copying $tmp_dir/external-drive-mount@.service to $service_install_dir/external-drive-mount@.service"
-sudo cp "$tmp_dir/external-drive-mount@.service" "$service_install_dir/external-drive-mount@.service"
+  echo "Copying $tmp_dir/external-drive-mount@.service to $service_install_dir/external-drive-mount@.service"
+  sudo cp "$tmp_dir/external-drive-mount@.service" "$service_install_dir/external-drive-mount@.service"
 
-echo "Reloading Services"
-sudo udevadm control --reload
-sudo systemctl daemon-reload
+  echo "Reloading Services"
+  sudo udevadm control --reload
+  sudo systemctl daemon-reload
+}
+
+function install_zmount () {
+  zenity --question --width=400 \
+    --text="Would you like to add \"zMount.sh\" \
+    \n(a tool to manually mount drives) to your Steam Library?"
+  if [ "$?" != 0 ]; then
+    #NOTE: This code will never be reached due to "set -e", the system will already exit for us but just incase keep this
+    echo "bye then! xxx"
+    exit 0;
+  fi
+
+  echo "Downloading Required Files"
+  curl -o "$tmp_dir/zMount.sh" "$repo_url/zMount.sh"
+
+  echo "Copying $tmp_dir/zMount.sh to $script_install_dir/zMount.sh"
+  sudo cp "$tmp_dir/zMount.sh" "$script_install_dir/zMount.sh"
+
+  echo "Adding Execute and Removing Write Permissions"
+  sudo chmod 555 "$script_install_dir/zMount.sh"
+
+  steamos-add-to-steam "$script_install_dir/zMount.sh"
+}
+
+install_automount
+install_zmount
 
 echo "Done."
