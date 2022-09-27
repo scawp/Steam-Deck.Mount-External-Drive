@@ -1,47 +1,31 @@
 # Steam-Deck.Mount-External-Drive
-Scripts to Auto-Mount External USB SSD on the Steam Deck
-
-# About
-
-This is a slimmed down verion of the [main](https://github.com/scawp/Steam-Deck.Mount-External-Drive) branch to provide 
-only automounting to ANY External Drive, such as a Dock ;)
-without worrying about configuration.
+Scripts to Auto-Mount (and to Manually mount & unmount from `GameMode`) External USB SSD on the Steam Deck
 
 # How does this work?
 
 a `udev` rule is added to `/etc/udev/rules.d/99-external-drive-mount.rules`
 which calls systemd `/etc/systemd/system/external-drive-mount@[sda1|sda2|sdd1|etc].service`
-that then runs `automount.sh`
+that then runs `automount.sh` to Auto Mount any plugged in USB Storage Device.
 
 `/etc/fstab` is not required for mounting in this way, (however if a Device has an `fstab` entry these scripts will still work)
 
-## Just want to Auto-Mount?
-
-See [https://github.com/scawp/Steam-Deck.Mount-External-Drive/tree/Quick-Auto-Mount-Only](https://github.com/scawp/Steam-Deck.Mount-External-Drive/tree/Quick-Auto-Mount-Only)
-
 # Video Guide
 
-https://youtu.be/TiXmf_b7HF8
+https://youtu.be/TiXmf_b7HF8 (Slightly Out of Date)
 
 # Installation
 
 ## Via Curl (One Line Install)
 
-In Konsole type `curl -sSL https://raw.githubusercontent.com/scawp/Steam-Deck.Mount-External-Drive/Quick-Auto-Mount-Only/curl_install.sh | bash`
+In Konsole type `curl -sSL https://raw.githubusercontent.com/scawp/Steam-Deck.Mount-External-Drive/main/curl_install.sh | bash`
 
 a `sudo` password is required (run `passwd` if required first)
-
-## Via Git
-
-Clone this Repo `git clone git@github.com:scawp/Steam-Deck.Mount-External-Drive.git`
-
-Run `chmod +x install_automount.sh`
-
-then run `./install_automount.sh`, a `sudo` password is required (run `passwd` if required first)
 
 # Operation
 
 The External Drive(s) will be Auto-Mounted to `/run/media/deck/[LABEL]` eg `/run/media/deck/External-ssd/` if the Device has no `label` then the Devices `UUID` will be used eg `/run/media/deck/a12332-12bf-a33ab-eef/`
+
+The install will also offer an optional install of `zMount.sh` which will be added to your Steam Library as a non-steam game which can be ran from `GameMode`, this will allow manual (un)mounting of USB Devices and the SD-Card. (NOTE: This is probably more useful for unmounting as the auto mount script should mount anything anyway).
 
 ### NOTE!
 
@@ -55,11 +39,11 @@ Drive will still need added to Steam as a Steam Library Folder in Desktop mode i
 
 `sudo rm /etc/systemd/system/external-drive-mount@.service`
 
+`sudo rm -r /home/deck/.local/share/scawp/SDMED`
+
 `sudo udevadm control --reload`
 
 `sudo systemctl daemon-reload`
-
-Then delete this Repo from whereever you downloaded it to your Deck
 
 # WORK IN PROGRESS!
 
