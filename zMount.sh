@@ -52,11 +52,9 @@ function sudo_mount_drive () {
   fi
 
   if [ "$?" != 0 ]; then
-    log_error "$(sed -n '1p' $tmp_dir/last_error.log)"
     ret_value="$(sed -n '1p' $tmp_dir/last_error.log)"
     ret_success=0
   else
-    log_msg "$(sed -n '1p' $tmp_dir/last_msg.log)"
     ret_value="$(sed -n '1p' $tmp_dir/last_msg.log)"
     ret_success=1
   fi
