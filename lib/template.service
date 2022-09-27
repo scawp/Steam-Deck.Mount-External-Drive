@@ -1,10 +1,3 @@
-# /etc/systemd/system
-# maybe move to user? ~/.local/share/systemd/user
-# sudo systemctl daemon-reload
-
-[Unit]
-Description=Mount External Drive on %i
-
 [Service]
 Type=oneshot
 RemainAfterExit=true

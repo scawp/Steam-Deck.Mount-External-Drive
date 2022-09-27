@@ -5,13 +5,9 @@
 # Use at own Risk!
 
 script_dir="$(dirname $(realpath "$0"))"
-tmp_dir="$script_dir/temp"
-log_dir="$script_dir/logs"
-config_dir="$script_dir/config"
+tmp_dir="/tmp/scawp.SDMED.zMount"
 
 mkdir -p "$tmp_dir"
-mkdir -p "$log_dir"
-mkdir -p "$config_dir"
 
 external_drive_list="$tmp_dir/external_drive_list.txt"
 
@@ -21,14 +17,6 @@ if [ ! -f ~/.config/kdesurc ];then
   echo "[super-user-command]" > ~/.config/kdesurc
   echo "super-user-command=sudo" >> ~/.config/kdesurc
 fi
-
-function log_error () {
-  echo "$1" | sed "s&^&[$(date "+%F %T")] ("$0") &" | tee -a "$log_dir/error.log"
-}
-
-function log_msg () {
-  echo "$1" | sed "s&^&[$(date "+%F %T")] ("$0") &" | tee -a "$log_dir/info.log"
-}
 
 function list_gui () {
   IFS=$'[\t|\n]';
@@ -64,11 +52,9 @@ function sudo_mount_drive () {
   fi
 
   if [ "$?" != 0 ]; then
-    log_error "$(sed -n '1p' $tmp_dir/last_error.log)"
     ret_value="$(sed -n '1p' $tmp_dir/last_error.log)"
     ret_success=0
   else
-    log_msg "$(sed -n '1p' $tmp_dir/last_msg.log)"
     ret_value="$(sed -n '1p' $tmp_dir/last_msg.log)"
     ret_success=1
   fi
@@ -82,11 +68,9 @@ function mount_drive () {
   fi
 
   if [ "$?" != 0 ]; then
-    log_error "$(sed -n '1p' $tmp_dir/last_error.log)"
     ret_value="$(sed -n '1p' $tmp_dir/last_error.log)"
     sudo_mount_drive $1 $2
   else
-    log_msg "$(sed -n '1p' $tmp_dir/last_msg.log)"
     ret_value="$(sed -n '1p' $tmp_dir/last_msg.log)"
     ret_success=1
   fi
@@ -119,22 +103,6 @@ function main () {
   if [ "$mount_point" = "" ]; then
     confirm_gui "mount" "$selected_device" "$uuid"
     mount_drive "mount" "$uuid"
-     if [ "$ret_success" = "1" ]; then
-      if [ -f "$config_dir/drive_list.conf" ]; then
-        if [ ! "$(grep ^"$uuid"$ "$config_dir/drive_list.conf")" ]; then
-          #TODO: Function
-          zenity --question --width=400 \
-            --text="Do you want to Auto-Mount "$(lsblk -noMOUNTPOINT $selected_device)"?"
-          if [ "$?" = 0 ]; then
-            echo "$uuid" >> "$config_dir/drive_list.conf"
-            zenity --info --width=400 \
-              --text="Device with UUID:$uuid will be mounted Auto-Mounted"
-            
-            exit 0;
-          fi
-        fi
-      fi
-    fi
   else
     confirm_gui "unmount" "$selected_device" "$uuid"
     mount_drive "unmount" "$uuid"

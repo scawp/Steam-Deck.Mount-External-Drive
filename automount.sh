@@ -4,10 +4,9 @@
 #Source: https://github.com/scawp/Steam-Deck.Mount-External-Drive
 # Use at own Risk!
 
-script_dir="$(dirname $(realpath "$0"))"
-config_dir="$script_dir/config"
-
-mkdir -p "$config_dir"
+#This is a slimmed down verions of the main branch to provide 
+#only automounting to ANY External Drive, such as a Dock ;)
+#without worrying about configuration
 
 function mount_drive () {
   label="$(lsblk -noLABEL $1)"
@@ -43,17 +42,14 @@ function mount_drive () {
 
 #TODO: Do stuff on device removal
 if [ "$1" = "remove" ]; then
+  #TODO: if removed without unmounting first  
+    #Attempt to unmount if system still thinks is mounted. btrfs seems to do this
+    #mount "$2"
+    #Delete orphaned dir in /dev/media/deck/[LABEL|UUID] if exists
   exit 0;
-fi
-
-if [ -f "$config_dir/drive_list.conf" ]; then
-  if [ ! -z "$(grep "^$(lsblk -noUUID /dev/$2)$" "$config_dir/drive_list.conf")" ] || [ ! -z "$(grep "^ALWAYS$" "$config_dir/drive_list.conf")" ]; then
-    mount_drive "/dev/$2"
-  else
-    echo "Drive /dev/$2 with UUID $(lsblk -noUUID /dev/$2) not whitelisted."
-  fi
 else
-  echo "Missing Config file: $config_dir/drive_list.conf"
+  #TODO: Check if Device is already mounted? eg via fstab?
+  mount_drive "/dev/$2"
 fi
 
 exit 0;
