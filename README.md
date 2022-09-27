@@ -9,12 +9,6 @@ that then runs `automount.sh` to Auto Mount any plugged in USB Storage Device.
 
 `/etc/fstab` is not required for mounting in this way, (however if a Device has an `fstab` entry these scripts will still work)
 
-NOTE! The Quick-Auto-Mount-Only Branch contains a very handy One Line Install:
-
-`curl -sSL https://raw.githubusercontent.com/scawp/Steam-Deck.Mount-External-Drive/Quick-Auto-Mount-Only/curl_install.sh | bash`
-
-Consider using this if you only care about Auto Mounting External Drives with zero fuss.
-
 # Video Guide
 
 https://youtu.be/TiXmf_b7HF8 (Slightly Out of Date)
