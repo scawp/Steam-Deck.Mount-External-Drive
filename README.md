@@ -15,6 +15,10 @@ that then runs `automount.sh`
 
 `/etc/fstab` is not required for mounting in this way, (however if a Device has an `fstab` entry these scripts will still work)
 
+## Just want to Auto-Mount?
+
+See [https://github.com/scawp/Steam-Deck.Mount-External-Drive/tree/Quick-Auto-Mount-Only](https://github.com/scawp/Steam-Deck.Mount-External-Drive/tree/Quick-Auto-Mount-Only)
+
 # Video Guide
 
 https://youtu.be/TiXmf_b7HF8
@@ -58,6 +62,7 @@ Drive will still need added to Steam as a Steam Library Folder in Desktop mode i
 Then delete this Repo from whereever you downloaded it to your Deck
 
 # WORK IN PROGRESS!
+
 This will probably have bugs, so beware! log bugs under [issues](https://github.com/scawp/Steam-Deck.Mount-External-Drive/issues)!
 
 # "This is cool! How can I thank you?"
