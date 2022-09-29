@@ -23,11 +23,7 @@ The install will also offer an optional install of `zMount.sh` which will be add
 
 Drive requires prior formatting (currently tested with NTFS, Ext4, btrfs, NOTE: btrfs mounts with incorrect ownership, TODO). All Partitions will be Mounted on Boot and /or On Insert.
 
-~~Drive will still need added to Steam as a Steam Library Folder in Desktop mode initially but will appear on subsequent Boots/Inserts.~~ This was the case until recently, now however the Steam Library on the Drive was no longer added to Steam on Inserting the Drive. As Such I've "stolen" the following `systemd-run -M 1000@ --user --collect --wait sh -c "./.steam/root/ubuntu12_32/steam steam://addlibraryfolder/${url@Q}"` from Valve SD Card Auto Mounting Service (which is pretty similar it turns out!).
-
-### WARNING (Maybe?)
-
-As a result of the code mentioned above, a Steam Library will be created on ANY device inserted into the Deck if one isn't found, this may or may not be desirable for your needs. 
+~~Drive will still need added to Steam as a Steam Library Folder in Desktop mode initially but will appear on subsequent Boots/Inserts.~~ This was the case until recently, now however the Steam Library on the Drive was no longer added to Steam on Inserting the Drive. As Such I've "stolen" the following `systemd-run -M 1000@ --user --collect --wait sh -c "./.steam/root/ubuntu12_32/steam steam://addlibraryfolder/${url@Q}"` from Valve SD Card Auto Mounting Service (which is pretty similar it turns out!). This "should" automatically add any pre existing `SteamLibrary` folders if at the root of the drive.
 
 # Installation
 
