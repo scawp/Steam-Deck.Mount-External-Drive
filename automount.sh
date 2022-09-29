@@ -49,7 +49,7 @@ urlencode()
     url=$(urlencode "${mount_point}")
 
     # If Steam is running, notify it
-    if pgrep -x "steam" > /dev/null; then
+    #if pgrep -x "steam" > /dev/null; then
         # TODO use -ifrunning and check return value - if there was a steam process and it returns -1, the message wasn't sent
         # need to retry until either steam process is gone or -ifrunning returns 0, or timeout i guess
         systemd-run -M 1000@ --user --collect --wait sh -c "steam steam://addlibraryfolder/${url@Q}"
