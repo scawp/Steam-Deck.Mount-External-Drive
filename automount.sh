@@ -28,7 +28,7 @@ function mount_drive () {
     mount.lowntfs-3g "$1" "/run/media/deck/$label" -ouid=1000,gid=1000,user
   elif [ "$fs_type" = "ext4" ]; then
     mount "$1" "/run/media/deck/$label"
-    chmod deck:root "/run/media/deck/$label"
+    chown deck:root "/run/media/deck/$label"
   else
     #TODO: Better default options
     echo "Attempting Mounting $fs_type"
