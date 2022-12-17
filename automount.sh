@@ -29,7 +29,7 @@ function mount_drive () {
   else
     #TODO: Better default options
     echo "Attempting Mounting $fs_type"
-    mount "$1" "/run/media/deck/$label"
+    mount "$1" "/run/media/deck/$label" -ouid=1000,gid=1000,user
   fi
 
 # From https://gist.github.com/HazCod/da9ec610c3d50ebff7dd5e7cac76de05
