@@ -71,29 +71,6 @@ function install_automount () {
   sudo systemctl daemon-reload
 }
 
-function install_zmount () {
-  zenity --question --width=400 \
-    --text="Would you like to add \"zMount.sh\" \
-    \n(a tool to manually mount drives) to your Steam Library?"
-  if [ "$?" != 0 ]; then
-    #NOTE: This code will never be reached due to "set -e", the system will already exit for us but just incase keep this
-    echo "bye then! xxx"
-    exit 0;
-  fi
-
-  echo "Downloading Required Files"
-  curl -o "$tmp_dir/zMount.sh" "$repo_url/zMount.sh"
-
-  echo "Copying $tmp_dir/zMount.sh to $script_install_dir/zMount.sh"
-  sudo cp "$tmp_dir/zMount.sh" "$script_install_dir/zMount.sh"
-
-  echo "Adding Execute and Removing Write Permissions"
-  sudo chmod 555 "$script_install_dir/zMount.sh"
-
-  steamos-add-to-steam "$script_install_dir/zMount.sh"
-}
-
 install_automount
-install_zmount
 
 echo "Done."
