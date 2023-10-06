@@ -1,5 +1,0 @@
-[Service]
-Type=oneshot
-RemainAfterExit=true
-ExecStart=[AUTOMOUNTSCRIPT]/automount.sh add %i
-ExecStop=[AUTOMOUNTSCRIPT]/automount.sh remove %i
