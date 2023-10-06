@@ -1,29 +1,33 @@
-# Steam-Deck.Mount-External-Drive
-Scripts to Auto-Mount (and to Manually mount & unmount from `GameMode`) External USB SSD on the Steam Deck
+# Steam-Deck.Mount-External-Drive 3.5
+Script to Auto-Mount NTFS SD/External USB/Internal Partitions (If you Dual-Boot) on the Steam Deck
+
+**IN-PROGRESS** BTRFS and exFAT 
+
+# Steam OS 3.5 Now supports Ext4 external Drives out the box so see **Uninstall** if thats all you need!
+
+Not only that but Valve have also improved their SD card mounting script (No More SD Card Bricking!!!* *maybe...) 
+
+So now my script (the one you are looking at now) is basically a mirror of that but replacing `ext4` with `ntfs` and adding rules for Internal Drives also, I'll add other FSTypes once tested.
+
+Looking for the old code? see https://github.com/scawp/Steam-Deck.Mount-External-Drive/tree/pre-3.5
 
 # How does this work?
 
 a `udev` rule is added to `/etc/udev/rules.d/99-external-drive-mount.rules`
 which calls systemd `/etc/systemd/system/external-drive-mount@[sda1|sda2|sdd1|etc].service`
-that then runs `automount.sh` to Auto Mount any plugged in USB Storage Device.
+that then runs `automount.sh` to Auto Mount any NTFS SD/External USB/Internal Partitions.
 
 `/etc/fstab` is not required for mounting in this way, (however if a Device has an `fstab` entry these scripts will still work)
 
 # Video Guide
 
-https://youtu.be/TiXmf_b7HF8 (Slightly Out of Date)
+https://youtu.be/TiXmf_b7HF8 (**VERY** Out of Date)
 
 # Operation
 
-The External Drive(s) will be Auto-Mounted to `/run/media/deck/[LABEL]` eg `/run/media/deck/External-ssd/` if the Device has no `label` then the Devices `UUID` will be used eg `/run/media/deck/a12332-12bf-a33ab-eef/`
+The Drive(s) will be Auto-Mounted to `/run/media/deck/[LABEL]` eg `/run/media/deck/External-ssd/` if the Device has no `label` then the Devices `UUID` will be used eg `/run/media/deck/a12332-12bf-a33ab-eef/`
 
-The install will also offer an optional install of `zMount.sh` which will be added to your Steam Library as a non-steam game which can be ran from `GameMode`, this will allow manual (un)mounting of USB Devices and the SD-Card. (NOTE: This is probably more useful for unmounting as the auto mount script should mount anything anyway).
-
-### NOTE!
-
-Drive requires prior formatting (currently tested with NTFS, Ext4, btrfs, NOTE: btrfs mounts with incorrect ownership, TODO). All Partitions will be Mounted on Boot and /or On Insert.
-
-~~Drive will still need added to Steam as a Steam Library Folder in Desktop mode initially but will appear on subsequent Boots/Inserts.~~ This was the case until recently, now however the Steam Library on the Drive was no longer added to Steam on Inserting the Drive. As Such I've "stolen" the following `systemd-run -M 1000@ --user --collect --wait sh -c "./.steam/root/ubuntu12_32/steam steam://addlibraryfolder/${url@Q}"` from Valve SD Card Auto Mounting Service (which is pretty similar it turns out!). This "should" automatically add any pre existing `SteamLibrary` folders if at the root of the drive.
+~The install will also offer an optional install of `zMount.sh` which will be added to your Steam Library as a non-steam game which can be ran from `GameMode`, this will allow manual (un)mounting of USB Devices and the SD-Card. (NOTE: This is probably more useful for unmounting as the auto mount script should mount anything anyway).~ No longer required, can unmount from `settings>storage`
 
 # Installation
 
