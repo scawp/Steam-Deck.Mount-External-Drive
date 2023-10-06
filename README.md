@@ -9,6 +9,8 @@ Not only that but Valve have also improved their SD card mounting script (No Mor
 
 So now my script (the one you are looking at now) is basically a mirror of that but replacing `ext4` with `ntfs` and adding rules for Internal Drives also, I'll add other FSTypes once tested.
 
+Looking for the old code? see https://github.com/scawp/Steam-Deck.Mount-External-Drive/tree/pre-3.5
+
 # How does this work?
 
 a `udev` rule is added to `/etc/udev/rules.d/99-external-drive-mount.rules`
