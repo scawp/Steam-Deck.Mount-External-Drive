@@ -3,6 +3,12 @@ Script to Auto-Mount NTFS, BTRFS & exFat SDCards, External USB Drives (or SSD Do
 
 NTFS & BTRFS Partitions containing a SteamLibrary at root level or in a folder named `SteamLibrary` will automatically be added to Steam, exFAT isn't supported as a SteamLibrary but will be Mounted for use with other Launchers or for Media/ROMs etc.
 
+# "This is cool! How can I thank you?"
+### Why not drop me a sub over on my youtube channel ;) [Chinballs Gaming](https://www.youtube.com/chinballsTV?sub_confirmation=1)
+
+### Also [Check out all these other things I'm making](https://github.com/scawp/Steam-Deck.Tools-List)
+
+
 # Steam OS 3.5 Now supports Ext4 external Drives out the box so see **Uninstall** if thats all you need!
 
 Not only that but Valve have also improved their SD card mounting script (No More SD Card Bricking!!!* *maybe...) 
@@ -56,8 +62,3 @@ a `sudo` password is required (run `passwd` if required first)
 # WORK IN PROGRESS!
 
 This will probably have bugs, so beware! log bugs under [issues](https://github.com/scawp/Steam-Deck.Mount-External-Drive/issues)!
-
-# "This is cool! How can I thank you?"
-### Why not drop me a sub over on my youtube channel ;) [Chinballs Gaming](https://www.youtube.com/chinballsTV?sub_confirmation=1)
-
-### Also [Check out all these other things I'm making](https://github.com/scawp/Steam-Deck.Tools-List)
