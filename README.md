@@ -40,8 +40,10 @@ a `sudo` password is required (run `passwd` if required first)
 # Uninstall
 
 `sudo rm /etc/udev/rules.d/99-external-drive-mount.rules`
+
 `sudo rm /etc/udev/rules.d/98-external-drive-mount.rules`
-Note: ones of these may not exist depending on the version of my script you originally installed.
+
+#Note: ones of these may not exist depending on the version of my script you originally installed.
 
 `sudo rm /etc/systemd/system/external-drive-mount@.service`
 
