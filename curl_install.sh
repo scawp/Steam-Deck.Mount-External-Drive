@@ -49,7 +49,7 @@ function install_automount () {
   echo "Downloading Required Files"
   curl -o "$tmp_dir/automount.sh" "$repo_url/automount.sh"
   curl -o "$tmp_dir/external-drive-mount@.service" "$repo_lib_dir/external-drive-mount@.service"
-  curl -o "$tmp_dir/99-external-drive-mount.rules" "$repo_lib_dir/99-external-drive-mount.rules"
+  curl -o "$tmp_dir/98-external-drive-mount.rules" "$repo_lib_dir/98-external-drive-mount.rules"
 
   echo "Making script folder $script_install_dir"
   mkdir -p "$script_install_dir"
@@ -60,8 +60,12 @@ function install_automount () {
   echo "Adding Execute and Removing Write Permissions"
   sudo chmod 555 $script_install_dir/automount.sh
 
-  echo "Copying $tmp_dir/99-external-drive-mount.rules to $rules_install_dir/99-external-drive-mount.rules"
-  sudo cp "$tmp_dir/99-external-drive-mount.rules" "$rules_install_dir/99-external-drive-mount.rules"
+  echo "Copying $tmp_dir/98-external-drive-mount.rules to $rules_install_dir/98-external-drive-mount.rules"
+  sudo cp "$tmp_dir/98-external-drive-mount.rules" "$rules_install_dir/98-external-drive-mount.rules"
+  #remove old rule if installed
+  if [ -f "$rules_install_dir/99-external-drive-mount.rules" ]; then
+    sudo rm "$rules_install_dir/99-external-drive-mount.rules"
+  fi
 
   echo "Copying $tmp_dir/external-drive-mount@.service to $service_install_dir/external-drive-mount@.service"
   sudo cp "$tmp_dir/external-drive-mount@.service" "$service_install_dir/external-drive-mount@.service"
