@@ -1,5 +1,4 @@
 #!/bin/bash
-#This is now a 1:1 copy of Valves code, credit them xxx
 
 set -euo pipefail
 
@@ -87,11 +86,29 @@ do_mount()
     #    OPTS+=",users,gid=100,umask=000,shortname=mixed,utf8=1,flush"
     #fi
 
-    # We need symlinks for Steam for now, so only automount ext4 as that'll Steam will format right now
-    if [[ ${ID_FS_TYPE} != "ntfs" ]]; then
-        echo "Error mounting ${DEVICE}: non-ntfs fstype: ${ID_FS_TYPE} - ${dev_json}"
-        exit 2
-    fi
+		case "${ID_FS_TYPE}" in
+				"ntfs")
+          echo "FSType is NTFS"
+          #Extra Opts don't seem necessary anymore? add if required
+          #OPTS+=""
+					;;
+				"exfat")
+          echo "FSType is exFat"
+					#OPTS+=",users,gid=100,umask=000,shortname=mixed,utf8=1,flush"
+					;;
+				"btrfs")
+          echo "FSType is btrfs"
+					;;
+        "ext4")
+					echo "Error mounting ${DEVICE}: SteamOS does ext4 for us!"
+          exit 2
+          ;;
+				*)
+					echo "Error mounting ${DEVICE}: unsupported fstype: ${ID_FS_TYPE} - ${dev_json}"
+          rm "${MOUNT_LOCK}"
+          exit 2
+					;;
+		esac
 
     # Prior to talking to udisks, we need all udev hooks (we were started by one) to finish, so we know it has knowledge
     # of the drive.  Our own rule starts us as a service with --no-block, so we can wait for rules to settle here
@@ -99,17 +116,6 @@ do_mount()
     #if ! udevadm settle; then
     #  echo "Failed to wait for \`udevadm settle\`"
     #  exit 1
-    #fi
-
-    # Try to repair the filesystem if it's known to have errors.
-    # ret=0 means no errors, 1 means that errors were corrected.
-    # In all other cases we stop here and report an error.
-    #ret=0
-    #fsck.ext4 -p "${DEVICE}" || ret=$?
-    #if (( ret != 0 && ret != 1 )); then
-    #    send_steam_url "system/devicemountresult" "${DEVBASE}/${FSCK_ERROR}"
-    #    echo "Error running fsck on ${DEVICE} (status = $ret)"
-    #    exit 1
     #fi
 
     # Ask udisks to auto-mount. This needs a version of udisks that supports the 'as-user' option.
@@ -138,6 +144,11 @@ do_mount()
         exit 1
     fi
 
+    if [[ ${ID_FS_TYPE} == "exfat" ]]; then
+        echo "exFat does not support symlinks, do not add library to Steam"
+        exit 0
+    fi
+
     # Create a symlink from /run/media to keep compatibility with apps
     # that use the older mount point (for SD cards only).
     case "${DEVBASE}" in
@@ -155,9 +166,15 @@ do_mount()
     esac
 
     echo "**** Mounted ${DEVICE} at ${mount_point} ****"
-
-    # If Steam is running, notify it
-    send_steam_url "addlibraryfolder" "${mount_point}"
+    
+    if [ -f "${mount_point}/libraryfolder.vdf" ]; then
+        send_steam_url "addlibraryfolder" "${mount_point}"
+    else
+        #TODO check permissions are 1000  when creating new SteamLibrary
+        mkdir -p "${mount_point}/SteamLibrary"
+        chown deck:deck "${mount_point}/SteamLibrary"
+        send_steam_url "addlibraryfolder" "${mount_point}/SteamLibrary"
+    fi
 }
 
 do_unmount()

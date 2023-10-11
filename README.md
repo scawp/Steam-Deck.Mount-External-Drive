@@ -1,19 +1,19 @@
 # Steam-Deck.Mount-External-Drive 3.5
-Script to Auto-Mount NTFS SD/External USB/Internal Partitions (If you Dual-Boot) on the Steam Deck
+Script to Auto-Mount NTFS, BTRFS & exFat SDCards, External USB Drives (or SSD Docks) & Internal Partitions (If you Dual-Boot) on the Steam Deck
 
-**IN-PROGRESS** BTRFS and exFAT 
+NTFS & BTRFS Partitions containing a SteamLibrary at root level or in a folder named `SteamLibrary` will automatically be added to Steam, exFAT isn't supported as a SteamLibrary but will be Mounted for use with other Launchers or for Media/ROMs etc.
 
 # Steam OS 3.5 Now supports Ext4 external Drives out the box so see **Uninstall** if thats all you need!
 
 Not only that but Valve have also improved their SD card mounting script (No More SD Card Bricking!!!* *maybe...) 
 
-So now my script (the one you are looking at now) is basically a mirror of that but replacing `ext4` with `ntfs` and adding rules for Internal Drives also, I'll add other FSTypes once tested.
+So now my script (the one you are looking at now) is basically a mirror of that but replacing `ext4` with `ntfs`, `btrfs` & `exFAT` and adding rules for Internal Partitions.
 
 Looking for the old code? see https://github.com/scawp/Steam-Deck.Mount-External-Drive/tree/pre-3.5
 
 # How does this work?
 
-a `udev` rule is added to `/etc/udev/rules.d/99-external-drive-mount.rules`
+a `udev` rule is added to `/etc/udev/rules.d/98-external-drive-mount.rules`
 which calls systemd `/etc/systemd/system/external-drive-mount@[sda1|sda2|sdd1|etc].service`
 that then runs `automount.sh` to Auto Mount any NTFS SD/External USB/Internal Partitions.
 
@@ -40,6 +40,8 @@ a `sudo` password is required (run `passwd` if required first)
 # Uninstall
 
 `sudo rm /etc/udev/rules.d/99-external-drive-mount.rules`
+`sudo rm /etc/udev/rules.d/98-external-drive-mount.rules`
+Note: ones of these may not exist depending on the version of my script you originally installed.
 
 `sudo rm /etc/systemd/system/external-drive-mount@.service`
 
