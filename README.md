@@ -27,7 +27,7 @@ that then runs `automount.sh` to Auto Mount any NTFS SD/External USB/Internal Pa
 
 # Video Guide
 
-https://youtu.be/TiXmf_b7HF8 (**VERY** Out of Date)
+https://www.youtube.com/watch?v=Yglf1EKBv2A
 
 # Operation
 
