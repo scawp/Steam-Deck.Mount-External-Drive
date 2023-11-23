@@ -100,8 +100,8 @@ do_mount()
           echo "FSType is btrfs"
 					;;
         "ext4")
-					echo "Error mounting ${DEVICE}: SteamOS does ext4 for us!"
-          exit 2
+					echo "FSType is ext4"
+          #exit 2
           ;;
 				*)
 					echo "Error mounting ${DEVICE}: unsupported fstype: ${ID_FS_TYPE} - ${dev_json}"
