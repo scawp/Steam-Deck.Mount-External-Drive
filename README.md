@@ -35,8 +35,6 @@ https://www.youtube.com/watch?v=Yglf1EKBv2A
 
 The Drive(s) will be Auto-Mounted to `/run/media/deck/[LABEL]` eg `/run/media/deck/External-ssd/` if the Device has no `label` then the Devices `UUID` will be used eg `/run/media/deck/a12332-12bf-a33ab-eef/`
 
-~The install will also offer an optional install of `zMount.sh` which will be added to your Steam Library as a non-steam game which can be ran from `GameMode`, this will allow manual (un)mounting of USB Devices and the SD-Card. (NOTE: This is probably more useful for unmounting as the auto mount script should mount anything anyway).~ No longer required, can unmount from `settings>storage`
-
 # Installation
 
 ## Via Curl (One Line Install)
@@ -47,11 +45,7 @@ a `sudo` password is required (run `passwd` if required first)
 
 # Uninstall
 
-`sudo rm /etc/udev/rules.d/99-external-drive-mount.rules`
-
-`sudo rm /etc/udev/rules.d/98-external-drive-mount.rules`
-
-#Note: ones of these may not exist depending on the version of my script you originally installed.
+`sudo rm /etc/udev/rules.d/99-steamos-automount.rules`
 
 `sudo rm /etc/systemd/system/external-drive-mount@.service`
 
