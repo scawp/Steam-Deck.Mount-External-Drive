@@ -62,11 +62,12 @@ function install_automount () {
 
   echo "Copying $tmp_dir/99-steamos-automount.rules to $rules_install_dir/99-steamos-automount.rules"
   sudo cp "$tmp_dir/99-steamos-automount.rules" "$rules_install_dir/99-steamos-automount.rules"
+  
   #remove old rules if installed
   if [ -f "$rules_install_dir/99-external-drive-mount.rules" ]; then
     sudo rm "$rules_install_dir/99-external-drive-mount.rules"
   fi
-
+  
   if [ -f "$rules_install_dir/98-external-drive-mount.rules" ]; then
     sudo rm "$rules_install_dir/98-external-drive-mount.rules"
   fi
@@ -80,5 +81,16 @@ function install_automount () {
 }
 
 install_automount
+
+zenity --question --width=400 \
+  --text="Restart Required to take effect, \
+\nDo you want to Restart Now?"
+if [ "$?" != 0 ]; then
+  #NOTE: This code will never be reached due to "set -e", the system will already exit for us but just incase keep this
+  echo "bye then! xxx"
+  exit 0;
+fi
+
+reboot
 
 echo "Done."
