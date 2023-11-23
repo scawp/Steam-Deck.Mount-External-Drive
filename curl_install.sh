@@ -49,7 +49,7 @@ function install_automount () {
   echo "Downloading Required Files"
   curl -o "$tmp_dir/automount.sh" "$repo_url/automount.sh"
   curl -o "$tmp_dir/external-drive-mount@.service" "$repo_lib_dir/external-drive-mount@.service"
-  curl -o "$tmp_dir/98-external-drive-mount.rules" "$repo_lib_dir/98-external-drive-mount.rules"
+  curl -o "$tmp_dir/99-steamos-automount.rules" "$repo_lib_dir/99-steamos-automount.rules"
 
   echo "Making script folder $script_install_dir"
   mkdir -p "$script_install_dir"
@@ -60,11 +60,16 @@ function install_automount () {
   echo "Adding Execute and Removing Write Permissions"
   sudo chmod 555 $script_install_dir/automount.sh
 
-  echo "Copying $tmp_dir/98-external-drive-mount.rules to $rules_install_dir/98-external-drive-mount.rules"
-  sudo cp "$tmp_dir/98-external-drive-mount.rules" "$rules_install_dir/98-external-drive-mount.rules"
-  #remove old rule if installed
+  echo "Copying $tmp_dir/99-steamos-automount.rules to $rules_install_dir/99-steamos-automount.rules"
+  sudo cp "$tmp_dir/99-steamos-automount.rules" "$rules_install_dir/99-steamos-automount.rules"
+  
+  #remove old rules if installed
   if [ -f "$rules_install_dir/99-external-drive-mount.rules" ]; then
     sudo rm "$rules_install_dir/99-external-drive-mount.rules"
+  fi
+  
+  if [ -f "$rules_install_dir/98-external-drive-mount.rules" ]; then
+    sudo rm "$rules_install_dir/98-external-drive-mount.rules"
   fi
 
   echo "Copying $tmp_dir/external-drive-mount@.service to $service_install_dir/external-drive-mount@.service"
@@ -76,5 +81,16 @@ function install_automount () {
 }
 
 install_automount
+
+zenity --question --width=400 \
+  --text="Restart Required to take effect, \
+\nDo you want to Restart Now?"
+if [ "$?" != 0 ]; then
+  #NOTE: This code will never be reached due to "set -e", the system will already exit for us but just incase keep this
+  echo "bye then! xxx"
+  exit 0;
+fi
+
+reboot
 
 echo "Done."
