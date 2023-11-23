@@ -86,29 +86,29 @@ do_mount()
     #    OPTS+=",users,gid=100,umask=000,shortname=mixed,utf8=1,flush"
     #fi
 
-		case "${ID_FS_TYPE}" in
-				"ntfs")
+        case "${ID_FS_TYPE}" in
+                "ntfs")
           echo "FSType is NTFS"
           #Extra Opts don't seem necessary anymore? add if required
           #OPTS+=""
-					;;
-				"exfat")
+                    ;;
+                "exfat")
           echo "FSType is exFat"
-					#OPTS+=",users,gid=100,umask=000,shortname=mixed,utf8=1,flush"
-					;;
-				"btrfs")
+                    #OPTS+=",users,gid=100,umask=000,shortname=mixed,utf8=1,flush"
+                    ;;
+                "btrfs")
           echo "FSType is btrfs"
-					;;
+                    ;;
         "ext4")
-					echo "FSType is ext4"
+                    echo "FSType is ext4"
           #exit 2
           ;;
-				*)
-					echo "Error mounting ${DEVICE}: unsupported fstype: ${ID_FS_TYPE} - ${dev_json}"
+                *)
+                    echo "Error mounting ${DEVICE}: unsupported fstype: ${ID_FS_TYPE} - ${dev_json}"
           rm "${MOUNT_LOCK}"
           exit 2
-					;;
-		esac
+                    ;;
+        esac
 
     # Prior to talking to udisks, we need all udev hooks (we were started by one) to finish, so we know it has knowledge
     # of the drive.  Our own rule starts us as a service with --no-block, so we can wait for rules to settle here
